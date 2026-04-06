@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CryptChat — Encrypted Group Messaging</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ===== LANDING SCREEN ===== -->
+<div id="screen-landing" class="screen active">
+  <div class="grid-bg"></div>
+  <div class="radial-accent-tl"></div>
+  <div class="radial-accent-br"></div>
+
+  <div class="landing-side-left">
+    <span>01 ENTRY</span>
+    <span>02 AUTH</span>
+    <span>03 SYNC</span>
+    <span>04 COMMS</span>
+  </div>
+
+  <div class="landing-card">
+    <div class="corner tl"></div>
+    <div class="corner br"></div>
+    <div class="landing-logo">
+      <span class="material-symbols-outlined landing-shield">shield</span>
+    </div>
+    <h1 class="landing-title">CRYPTCHAT</h1>
+    <p class="landing-sub">End-to-End Quantum Security</p>
+
+    <div class="landing-form">
+      <label class="field-label">System Identity</label>
+      <div class="input-wrap">
+        <input id="landing-name" type="text" placeholder="Enter your name to begin" autocomplete="off" maxlength="32" />
+        <span class="material-symbols-outlined input-icon" id="landing-icon">lock_open</span>
+      </div>
+      <button id="btn-enter" class="btn-primary btn-glow">
+        <span>START CHATTING</span>
+      </button>
+      <div class="landing-meta">
+        <span><span class="pulse-dot"></span> NODE 07 ACTIVE</span>
+        <span><span class="material-symbols-outlined" style="font-size:11px">fingerprint</span> AES-256 VERIFIED</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="landing-footer">
+    <span><span class="material-symbols-outlined" style="font-size:12px">terminal</span> v2.0.4-alpha</span>
+    <span><span class="material-symbols-outlined" style="font-size:12px">security</span> No-Log Architecture</span>
+    <span><span class="material-symbols-outlined" style="font-size:12px">router</span> Ping: <span id="ping-display">--</span>ms</span>
+  </div>
+</div>
+
+<!-- ===== MAIN APP ===== -->
+<div id="screen-app" class="screen">
+  <!-- Sidebar -->
+  <aside id="sidebar">
+    <div class="sidebar-header">
+      <span class="material-symbols-outlined sidebar-logo-icon">shield</span>
+      <div>
+        <h2 class="sidebar-title">CRYPTCHAT</h2>
+        <p class="sidebar-sub">VERIFIED AGENT</p>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a class="nav-item active" data-view="home">
+        <span class="material-symbols-outlined">home</span>
+        <span>Home</span>
+      </a>
+      <a class="nav-item" data-view="messages" id="nav-messages">
+        <span class="material-symbols-outlined">chat</span>
+        <span>Messages</span>
+      </a>
+      <a class="nav-item" data-view="encryption">
+        <span class="material-symbols-outlined">key</span>
+        <span>Encryption</span>
+      </a>
+      <a class="nav-item" data-view="settings">
+        <span class="material-symbols-outlined">settings</span>
+        <span>Settings</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-group-section" id="sidebar-group-section" style="display:none">
+      <p class="sidebar-section-label">ACTIVE CHANNEL</p>
+      <div class="sidebar-group-item active" id="sidebar-current-group">
+        <span class="material-symbols-outlined">lock</span>
+        <span id="sidebar-group-name">—</span>
+      </div>
+    </div>
+
+    <div class="sidebar-actions">
+      <button class="btn-create-group" id="btn-open-create">
+        <span class="material-symbols-outlined">add</span>
+        Create Group
+      </button>
+      <button class="btn-join-group" id="btn-open-join">
+        <span class="material-symbols-outlined">login</span>
+        Join Group
+      </button>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user" id="sidebar-user">
+        <div class="user-avatar" id="sidebar-avatar">A</div>
+        <div class="user-info">
+          <span class="user-name" id="sidebar-username">Agent</span>
+          <span class="user-status"><span class="pulse-dot green"></span> VERIFIED AGENT</span>
+        </div>
+      </div>
+      <div class="sidebar-bottom-links">
+        <a class="nav-item-sm"><span class="material-symbols-outlined">sensors</span> Status</a>
+        <a class="nav-item-sm" id="btn-logout"><span class="material-symbols-outlined">logout</span> Logout</a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Top bar -->
+  <header id="topbar">
+    <div class="topbar-left">
+      <span class="topbar-brand">CRYPTCHAT</span>
+      <nav class="topbar-nav">
+        <a class="topbar-link" id="topbar-home-link">Dashboard</a>
+        <a class="topbar-link active" id="topbar-chat-link">Encrypted Channels</a>
+      </nav>
+    </div>
+    <div class="topbar-right">
+      <span class="material-symbols-outlined topbar-icon">search</span>
+      <span class="material-symbols-outlined topbar-icon">security</span>
+      <div class="notif-wrap">
+        <span class="material-symbols-outlined topbar-icon">notifications</span>
+        <span class="notif-dot"></span>
+      </div>
+      <button class="btn-new-cipher" id="btn-open-create-top">New Cipher</button>
+      <div class="topbar-avatar" id="topbar-avatar">A</div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main id="main-content">
+
+    <!-- HOME VIEW -->
+    <div id="view-home" class="view active">
+      <div class="home-banner">
+        <div class="grid-bg"></div>
+        <div class="home-banner-inner">
+          <div class="home-status-row">
+            <span class="pulse-dot green"></span>
+            <span class="home-status-text">NODE STATUS: ONLINE</span>
+          </div>
+          <div class="home-icon-wrap">
+            <span class="material-symbols-outlined home-lock-icon">lock</span>
+          </div>
+          <h2 class="home-title">Secure Perimeter Established</h2>
+          <p class="home-desc">No active groups. Join or Create a group to begin chatting. Your communications are shielded by end-to-end tactical encryption protocols.</p>
+          <div class="home-cta-row">
+            <button class="home-cta-btn" id="home-btn-create">
+              <span class="material-symbols-outlined">add_circle</span>
+              <span>Initialize New Group</span>
+            </button>
+            <button class="home-cta-btn secondary" id="home-btn-join">
+              <span class="material-symbols-outlined">vpn_key</span>
+              <span>Enter Access Key</span>
+            </button>
+          </div>
+        </div>
+        <div class="home-log-section">
+          <div class="home-log-header">
+            <span>ENCRYPTION LOG / RECENT EVENTS</span>
+            <span class="live-badge"><span class="pulse-dot red"></span>LIVE/FED</span>
+          </div>
+          <div class="home-log-entries" id="home-log"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAT VIEW -->
+    <div id="view-chat" class="view">
+      <!-- Chat header -->
+      <div id="chat-header">
+        <div class="chat-header-left">
+          <span class="material-symbols-outlined chat-lock">lock</span>
+          <div>
+            <h3 id="chat-group-name">Group Name</h3>
+            <p class="chat-secure-tag"><span class="pulse-dot green"></span> SECURE END-TO-END TUNNEL ESTABLISHED</p>
+          </div>
+        </div>
+        <div class="chat-header-right">
+          <button class="icon-btn" id="btn-settings-panel" title="Group Settings">
+            <span class="material-symbols-outlined">settings</span>
+          </button>
+          <button class="icon-btn" id="btn-leave-group" title="Leave Group">
+            <span class="material-symbols-outlined">logout</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Message feed -->
+      <div id="message-feed"></div>
+
+      <!-- Typing indicator -->
+      <div id="typing-indicator" class="typing-indicator hidden">
+        <span id="typing-text"></span>
+        <span class="typing-dots"><span></span><span></span><span></span></span>
+      </div>
+
+      <!-- Emoji Picker -->
+      <div id="emoji-picker" class="emoji-picker hidden"></div>
+
+      <!-- Input bar -->
+      <div id="chat-input-bar">
+        <button class="icon-btn input-action" id="btn-emoji">
+          <span class="material-symbols-outlined">sentiment_satisfied</span>
+        </button>
+        <label class="icon-btn input-action" for="img-upload" title="Share Image">
+          <span class="material-symbols-outlined">image</span>
+        </label>
+        <input type="file" id="img-upload" accept="image/*" style="display:none" />
+        <div class="chat-input-wrap">
+          <input id="chat-input" type="text" placeholder="TRANSMIT ENCRYPTED MESSAGE..." autocomplete="off" />
+        </div>
+        <button class="btn-send" id="btn-send">
+          Send Message <span class="material-symbols-outlined">send</span>
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Group Settings Panel -->
+  <div id="settings-overlay" class="settings-overlay hidden">
+    <div id="settings-panel">
+      <div class="settings-panel-header">
+        <h3>GROUP PROFILE</h3>
+        <button class="icon-btn" id="btn-close-settings">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="settings-group-icon">
+        <span class="material-symbols-outlined">shield</span>
+      </div>
+      <div class="settings-group-name-row">
+        <span id="settings-group-name-display">GROUP</span>
+        <span class="material-symbols-outlined settings-edit-icon">edit</span>
+      </div>
+      <p class="settings-est">EST. <span id="settings-est-date">2024.01</span></p>
+
+      <div class="settings-section">
+        <div class="settings-label">ACCESS PROTOCOL</div>
+        <div class="settings-code-row">
+          <span id="settings-code-display" class="settings-code-text">—</span>
+          <button class="btn-reveal" id="btn-reveal-code">REVEAL</button>
+          <button class="icon-btn" id="btn-copy-code" style="display:none">
+            <span class="material-symbols-outlined">content_copy</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-label-row">
+          <span class="settings-label">ACTIVE AGENTS (<span id="settings-member-count">0</span>)</span>
+          <button class="btn-add-member">ADD</button>
+        </div>
+        <div id="settings-members-list"></div>
+      </div>
+
+      <div class="encryption-badge">
+        <span class="material-symbols-outlined" style="font-size:14px;color:#00f5ff">lock</span>
+        QUANTUM GUARD V2.4
+        <span class="enc-sub-badge">ACTIVE ENCRYPTION ENGINE</span>
+      </div>
+
+      <button class="btn-leave-settings" id="btn-leave-from-settings">
+        <span class="material-symbols-outlined">logout</span>
+        LEAVE GROUP
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== CREATE GROUP MODAL ===== -->
+<div id="modal-create" class="modal-backdrop hidden">
+  <div class="modal-card">
+    <div class="modal-inner-border"></div>
+    <div class="modal-header">
+      <div class="modal-icon-wrap purple">
+        <span class="material-symbols-outlined">shield</span>
+      </div>
+      <h2 class="modal-title">CREATE NEW GROUP</h2>
+      <p class="modal-sub">INITIALIZING SECURE SUBNET PROTOCOL...</p>
+      <div class="modal-divider"></div>
+    </div>
+    <div class="modal-body">
+      <label class="field-label">GROUP IDENTIFIER</label>
+      <input id="create-group-name" type="text" placeholder="Enter group name..." autocomplete="off" maxlength="48" />
+
+      <button id="btn-generate-group" class="btn-primary modal-btn">
+        GENERATE GROUP
+      </button>
+
+      <div id="create-code-reveal" style="display:none">
+        <div class="create-code-label">
+          ACCESS TOKEN GENERATED
+          <span class="secure-badge"><span class="material-symbols-outlined" style="font-size:10px">lock</span> SECURE</span>
+        </div>
+        <div class="create-code-display" id="create-code-display">—</div>
+        <p class="create-code-warn">THIS KEY IS REQUIRED FOR ALL PARTICIPANTS. DO NOT SHARE OVER INSECURE LINES.</p>
+      </div>
+
+      <button id="btn-enter-group" class="btn-primary modal-btn" style="display:none">
+        ENTER GROUP <span class="material-symbols-outlined" style="font-size:16px">arrow_forward</span>
+      </button>
+      <button id="btn-cancel-create" class="btn-ghost modal-btn">CANCEL PROTOCOL</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== JOIN GROUP MODAL ===== -->
+<div id="modal-join" class="modal-backdrop hidden">
+  <div class="modal-card">
+    <div class="modal-inner-border"></div>
+    <div class="modal-header">
+      <div class="modal-icon-wrap key">
+        <span class="material-symbols-outlined">key</span>
+      </div>
+      <h2 class="modal-title">JOIN ENCRYPTED GROUP</h2>
+      <div class="modal-divider"></div>
+      <p class="modal-sub" style="margin-top:12px">SECURE CHANNEL AUTHENTICATION REQUIRED</p>
+    </div>
+    <div class="modal-body">
+      <label class="field-label">GROUP ACCESS CODE</label>
+      <div class="input-validate-wrap">
+        <input id="join-code-input" type="text" placeholder="Enter 32-character group code" autocomplete="off" maxlength="39" />
+        <div class="input-bottom-line" id="join-code-line"></div>
+      </div>
+      <div class="join-code-meta">
+        <span id="join-code-status" class="join-code-status"></span>
+        <span id="join-code-count" class="join-code-count">0/32 chars</span>
+      </div>
+
+      <button id="btn-join-submit" class="btn-primary modal-btn purple-gradient">
+        Join Group <span class="material-symbols-outlined" style="font-size:16px">login</span>
+      </button>
+      <button id="btn-cancel-join" class="btn-ghost modal-btn">Cancel Request</button>
+    </div>
+    <div class="modal-footer">
+      <div class="enc-pill">
+        <span class="material-symbols-outlined" style="font-size:10px;color:#00dce5">lock</span>
+        <span>End-to-End Encrypted Tunnel</span>
+      </div>
+      <p class="modal-footer-text">Authorization logs are wiped immediately upon entry.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ===== IMAGE LIGHTBOX ===== -->
+<div id="lightbox" class="lightbox hidden">
+  <div class="lightbox-backdrop" id="lightbox-close"></div>
+  <img id="lightbox-img" src="" alt="Full size" />
+  <button class="lightbox-close-btn" id="lightbox-close-btn">
+    <span class="material-symbols-outlined">close</span>
+  </button>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
