@@ -136,14 +136,32 @@ const savedName = localStorage.getItem('cryptchat_username');
 if (savedName) { landingName.value = savedName; }
 
 socket.on('registered', ({ userId, username }) => {
+  const wasAlreadyInApp = screenApp.classList.contains('active');
   currentUser = { username, userId };
-  screenLanding.classList.remove('active');
-  screenApp.classList.add('active');
+
   sidebarUsername.textContent = username;
   sidebarAvatar.textContent = getInitial(username);
   topbarAvatar.textContent = getInitial(username);
-  populateHomeLogs();
-  populateEmojiPicker();
+
+  if (!wasAlreadyInApp) {
+    // Normal first-time login
+    screenLanding.classList.remove('active');
+    screenApp.classList.add('active');
+    populateHomeLogs();
+    populateEmojiPicker();
+  } else {
+    // Server restarted — silently re-join group if we were in one
+    if (currentGroup) {
+      socket.emit('joinGroup', { groupCode: currentGroup.groupCode, username });
+    }
+  }
+});
+
+// Auto re-register when socket reconnects after server restart
+socket.on('connect', () => {
+  if (currentUser && screenApp.classList.contains('active')) {
+    socket.emit('register', { username: currentUser.username });
+  }
 });
 
 // ============================================
